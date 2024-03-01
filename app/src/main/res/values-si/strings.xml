@@ -6,7 +6,7 @@
     <string name="correct_toast">නිවැ රදි!</string>
     <string name="incorrect_toast">වැ රද!</string>
     <string name="action_settings">සැ කසුම්</string>
-    <string name="share">බෙදීම</string>
+    <string name="share_button">බෙදීම</string>
     <string name="next_button">ඊළඟ</string>
     <string name="question_oceans">පැ සිෆික් සා ගරය අත්ලා න්තික් සා ගරයට වඩා විශා ලයි.</string>
     <string name="question_mideast">සූවස් ඇළ රතු මුහුද සහ ඉන්දියන් සා ගරය සම්බන්ධ කරයි.</string>
@@ -18,4 +18,7 @@
     <string name="question_africa1">පුරා ණ ඊජිප්තුවේ ඉතිහා සය රා ජවංශ 45 කට බෙදා ඇත.</string>
     <string name="question_americas1">නිව් යෝ ර් ක් යනු ඇමරිකා වේ අගනුවරයි</string>
     <string name="question_asia1">ආසි යා ව යනු ලෝ කයේ විශා ලතම මහා ද්වීපයයි.</string>
+    <string name="contact_button">දුරකථන අංක</string>
+    <string name="contact_name">නම</string>
+    <string name="contact_number">දුරකථන අංකය</string>
 </resources>
