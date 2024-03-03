@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         private Button contact_button;
         private TextView contact_name;
         private TextView contact_number;
+        private TextView success_button;
 
     private void updateQuestion(){
             int question = mQuestionBank[mCurrentIndex].getTextResId();
@@ -88,7 +89,10 @@ public class MainActivity extends AppCompatActivity {
         if (attemptedQuestions > 0) {
             successRate = ((double) correctAnswers / attemptedQuestions) * 100;
         }
-        Toast.makeText(this, "Success Rate: " + String.format("%.2f", successRate) + "%", Toast.LENGTH_SHORT).show();
+      //  Toast.makeText(this, "Success Rate: " + String.format("%.2f", successRate) + "%", Toast.LENGTH_SHORT).show();
+        String successRateText = "Success Rate is  " + String.format("%.2f", successRate) + "%";
+        success_button.setText(successRateText);
+
     }
 
 
@@ -102,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         mTrueButton = (Button) findViewById(R.id.true_button);
         mFalseButton = (Button) findViewById(R.id.false_button);
         share_button = (Button) findViewById(R.id.share_button);
+        success_button = (TextView) findViewById(R.id.success_button);
 
 
         share_button.setOnClickListener(new View.OnClickListener() {
@@ -166,16 +171,18 @@ public class MainActivity extends AppCompatActivity {
         updateButton(hasContactPermission());
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
         if (requestCode == REQUEST_CONTACT && data != null)  {
-            // Get the URI and query the content provider for the phone number
-            Uri contactUri = data.getData();
+            Uri contactUri = data.getData();            // Get the URI and query the content provider for the display the name
             String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
-            Cursor cursor = this.getContentResolver()
-                    .query(contactUri, queryFields, null, null, null);
+            //String[] queryFields1 = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
+
+            Cursor cursor = this.getContentResolver().query(contactUri, queryFields, null, null, null);
             try
             {
                 if (cursor.getCount() == 0) return;
@@ -191,9 +198,33 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
-
-
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (resultCode != Activity.RESULT_OK || data == null) return;
+//        if (requestCode == REQUEST_CONTACT) {
+//            // Get the URI and query the content provider for the phone number
+//            Uri contactUri = data.getData();
+//            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER};
+//
+//            Cursor cursor = null;
+//            try {
+//                cursor = this.getContentResolver().query(contactUri, queryFields, null, null, null);
+//                if (cursor != null && cursor.moveToFirst()) {
+//                    int nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+//                    int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+//                    if (nameIndex != -1 && numberIndex != -1) { // Check if columns exist
+//                        String name = cursor.getString(nameIndex);
+//                        String phoneNumber = cursor.getString(numberIndex);
+//                        String contactInfo = name + " - " + phoneNumber;
+//                        contact_name.setText(contactInfo);
+//                    }
+//                }
+//            } finally {
+//                if (cursor != null) {
+//                    cursor.close();
+//                }
+//            }
+//        }
+//    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
