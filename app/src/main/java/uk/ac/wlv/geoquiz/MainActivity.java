@@ -12,7 +12,6 @@ import android.database.Cursor;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -20,14 +19,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.provider.ContactsContract;
 import android.Manifest;
+import android.app.Activity;
 
 
 
 
 public class MainActivity extends AppCompatActivity {
-
+    private static final String KEY_INDEX = "index";
     private static final String TAG = "MainActivity";
+    private static final int REQUEST_CODE_CHEAT = 0;
     private static final int REQUEST_CONTACT = 1 ;
+    private Button mCheatButton;
     private Button mTrueButton;
         private Button mFalseButton;
         private TextView mQuestionTextView;
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         private TextView contact_name;
         private TextView contact_number;
         private TextView success_button;
+        private boolean mIsCheater;
 
     private void updateQuestion(){
             int question = mQuestionBank[mCurrentIndex].getTextResId();
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 new Question(R.string.question_asia1, true),
         };
 
-//        private void checkAnswer(boolean userPressedTrue){
+//       private void checkAnswer(boolean userPressedTrue){
 //            boolean answerIsTrue = mQuestionBank [mCurrentIndex].isAnswerTrue();
 //            int messageResId = 0;
 //            if (userPressedTrue == answerIsTrue){
@@ -74,11 +77,18 @@ public class MainActivity extends AppCompatActivity {
 
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
-        if (userPressedTrue == answerIsTrue) {
-            correctAnswers++;
-            Toast.makeText(this, R.string.correct_toast, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, R.string.incorrect_toast, Toast.LENGTH_SHORT).show();
+        int messageResId = 0;
+        if (mIsCheater) {
+            messageResId = R.string.judgment_toast;
+        }
+        else {
+            if (userPressedTrue == answerIsTrue) {
+                correctAnswers++;
+                messageResId = R.string.correct_toast;
+            } else {
+                messageResId = R.string.incorrect_toast;
+            }
+            Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
         }
         attemptedQuestions++;
         displaySuccessRate();
@@ -102,6 +112,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate(Bundle) called");
         setContentView(R.layout.activity_main);
+        if (savedInstanceState != null){
+            mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+        }
+        mCheatButton = (Button)findViewById(R.id.cheat_button);
+        mCheatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
+                Intent i = CheatActivity.newIntent(MainActivity.this, answerIsTrue);
+                startActivityForResult(i, REQUEST_CODE_CHEAT);
+            }
+        });
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
         updateQuestion();
         mTrueButton = (Button) findViewById(R.id.true_button);
@@ -141,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
+                mIsCheater = false;
                 updateQuestion();
             }
         });
@@ -149,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
         mPreviousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentIndex = (mCurrentIndex - 1) % mQuestionBank.length;
+                mCurrentIndex = (mCurrentIndex + 1) % mQuestionBank.length;
                 updateQuestion();
             }
         });
@@ -172,6 +195,12 @@ public class MainActivity extends AppCompatActivity {
         updateButton(hasContactPermission());
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle saveInstanceState){
+        super.onSaveInstanceState(saveInstanceState);
+        Log.i(TAG, "onSaveInstanceState");
+        saveInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+    }
 
     @Override
     public void onStart(){
@@ -200,32 +229,118 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onDestroy() called");
     }
 
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        if (resultCode != Activity.RESULT_OK) return;
+//        if (requestCode == REQUEST_CONTACT && data != null)  {
+//            Uri contactUri = data.getData();            // Get the URI and query the content provider for the display the name
+//            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts._ID};
+//
+//            Cursor cursor = this.getContentResolver().query(contactUri, queryFields, null, null, null);
+//            try
+//            {
+//                if (cursor.getCount() == 0) return;
+//                cursor.moveToFirst();
+//
+//                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+//                contact_name.setText(name);
+//
+//            }
+//            finally
+//            {
+//                cursor.close();
+//            }
+//        }
+//    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+       super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
-        if (requestCode == REQUEST_CONTACT && data != null)  {
-            Uri contactUri = data.getData();            // Get the URI and query the content provider for the display the name
-            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
-            //String[] queryFields1 = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
-
-            Cursor cursor = this.getContentResolver().query(contactUri, queryFields, null, null, null);
-            try
-            {
-                if (cursor.getCount() == 0) return;
-                cursor.moveToFirst();
-
-                String name = cursor.getString(0);
-                contact_name.setText(name);
-
+//        if (requestCode == REQUEST_CONTACT && data != null) {
+        if (requestCode == REQUEST_CODE_CHEAT){
+            if (data == null){
+                return;
             }
-            finally
-            {
-                cursor.close();
-            }
+//            Uri contactUri = data.getData(); // Get the URI
+//            String[] queryFields = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
+//
+//            Cursor cursor = getContentResolver().query(
+//                    contactUri,
+//                    queryFields,
+//                    null,
+//                    null,
+//                    null
+//            );
+//
+//            try {
+//                if (cursor == null || cursor.getCount() == 0) return;
+//                cursor.moveToFirst();
+//
+//                // Get the phone number
+//                @SuppressLint("Range") String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+//
+//                // Display the phone number
+//                contact_number.setText(phoneNumber);
+//            } finally {
+//                if (cursor != null) {
+//                    cursor.close();
+//                }
+//            }
+            mIsCheater = CheatActivity.wasAnswerShown(data);
         }
     }
+
+
+//
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
+//        if (resultCode != Activity.RESULT_OK) return;
+//        if (requestCode == REQUEST_CONTACT && data != null) {
+//            Uri contactUri = data.getData(); // Get the URI
+//            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts._ID};
+//
+//            Cursor cursor = this.getContentResolver().query(contactUri, queryFields, null, null, null);
+//            try {
+//                if (cursor.getCount() == 0) return;
+//                cursor.moveToFirst();
+//
+//                String name = cursor.getString(0);
+//                String contactId = cursor.getString(1);
+//
+//                // Display the name
+//                contact_name.setText(name);
+//
+//                // Use the contact ID to fetch the phone number
+//                String phoneNumber = getPhoneNumber(contactId);
+//                if (phoneNumber != null) {
+//                    // Display the phone number
+//                    contact_number.setText(phoneNumber);
+//                } else {
+//                    // Handle case where phone number is not found
+//                    contact_number.setText("Phone number not found");
+//                }
+//
+//            } finally {
+//                cursor.close();
+//            }
+//        }
+//    }
+//
+//    private String getPhoneNumber(String contactId) {
+//        Cursor cursor = getContentResolver().query(
+//                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+//                null,
+//                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+//                new String[]{contactId},
+//                null
+//        );
+//        return contactId;
+
+
+    ////        super.onActivityResult(requestCode, resultCode, data);
 //        if (resultCode != Activity.RESULT_OK || data == null) return;
 //        if (requestCode == REQUEST_CONTACT) {
 //            // Get the URI and query the content provider for the phone number

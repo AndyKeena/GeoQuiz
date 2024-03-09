@@ -22,4 +22,8 @@
     <string name="contact_button">දුරකථන අංක</string>
     <string name="contact_name">නම</string>
     <string name="contact_number">දුරකථන අංකය</string>
+    <string name="warning_text">Are you sure you want to do this?</string>
+    <string name="show_answer_button">Show Answer</string>
+    <string name="cheat_button">Cheat!</string>
+    <string name="judgment_toast">Cheating is wrong.</string>
 </resources>

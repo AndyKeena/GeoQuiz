@@ -22,4 +22,8 @@
         <string name="contact_button">Contacts</string>
         <string name="contact_name">Name</string>
         <string name="contact_number">Contact Number</string>
+        <string name="warning_text">Are you sure you want to do this?</string>
+        <string name="show_answer_button">Show Answer</string>
+        <string name="cheat_button">Cheat!</string>
+        <string name="judgment_toast">Cheating is wrong.</string>
 </resources>
