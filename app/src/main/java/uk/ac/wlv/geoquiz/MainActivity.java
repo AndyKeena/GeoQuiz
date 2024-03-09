@@ -63,18 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 new Question(R.string.question_asia1, true),
         };
 
-//       private void checkAnswer(boolean userPressedTrue){
-//            boolean answerIsTrue = mQuestionBank [mCurrentIndex].isAnswerTrue();
-//            int messageResId = 0;
-//            if (userPressedTrue == answerIsTrue){
-//                messageResId = R.string.correct_toast;
-//            }
-//            else {
-//                messageResId = R.string.incorrect_toast;
-//            }
-//            Toast.makeText(this, messageResId, Toast.LENGTH_SHORT).show();
-//        }
-
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
         int messageResId = 0;
@@ -99,13 +87,9 @@ public class MainActivity extends AppCompatActivity {
         if (attemptedQuestions > 0) {
             successRate = ((double) correctAnswers / attemptedQuestions) * 100;
         }
-      //  Toast.makeText(this, "Success Rate: " + String.format("%.2f", successRate) + "%", Toast.LENGTH_SHORT).show();
         String successRateText = "Success Rate is  " + String.format("%.2f", successRate) + "%";
         success_button.setText(successRateText);
-
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,14 +115,13 @@ public class MainActivity extends AppCompatActivity {
         share_button = (Button) findViewById(R.id.share_button);
         success_button = (TextView) findViewById(R.id.success_button);
 
-
         share_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.setType("text/plain");
-                sendIntent.putExtra(Intent.EXTRA_TEXT, "kkkkkkkkk");
+                sendIntent.putExtra(Intent.EXTRA_TEXT, "Hi");
 
                 startActivity(sendIntent);
             }
@@ -290,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
 //            }
             mIsCheater = CheatActivity.wasAnswerShown(data);
         }
-    }
+   // }
 
 
 //
@@ -300,7 +283,8 @@ public class MainActivity extends AppCompatActivity {
 //        if (resultCode != Activity.RESULT_OK) return;
 //        if (requestCode == REQUEST_CONTACT && data != null) {
 //            Uri contactUri = data.getData(); // Get the URI
-//            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts._ID};
+//            String number = "0704136693";
+//            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME, number};
 //
 //            Cursor cursor = this.getContentResolver().query(contactUri, queryFields, null, null, null);
 //            try {
@@ -308,27 +292,52 @@ public class MainActivity extends AppCompatActivity {
 //                cursor.moveToFirst();
 //
 //                String name = cursor.getString(0);
-//                String contactId = cursor.getString(1);
+//                String contactId = number;
 //
 //                // Display the name
 //                contact_name.setText(name);
+//                contact_name.setText(number);
 //
-//                // Use the contact ID to fetch the phone number
-//                String phoneNumber = getPhoneNumber(contactId);
-//                if (phoneNumber != null) {
-//                    // Display the phone number
-//                    contact_number.setText(phoneNumber);
-//                } else {
-//                    // Handle case where phone number is not found
-//                    contact_number.setText("Phone number not found");
-//                }
+////                // Use the contact ID to fetch the phone number
+////                String phoneNumber = getPhoneNumber(contactId);
+////                if (phoneNumber != null) {
+////                    // Display the phone number
+////                    contact_number.setText(phoneNumber);
+////                } else {
+////                    // Handle case where phone number is not found
+////                    contact_number.setText("Phone number not found");
+////                }
 //
 //            } finally {
 //                cursor.close();
 //            }
 //        }
-//    }
-//
+        if (resultCode != Activity.RESULT_OK) return;
+        if (requestCode == REQUEST_CONTACT && data != null) {
+            Uri contactUri = data.getData(); // Get the URI
+            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
+
+            Cursor cursor = null;
+            try {
+                cursor = getContentResolver().query(contactUri, queryFields, null, null, null);
+                if (cursor == null || cursor.getCount() == 0) return;
+
+                cursor.moveToFirst();
+                String name = cursor.getString(0);
+//                String contactId = number;
+                // Display the name
+                contact_name.setText(name);
+                String number= "0704136693";
+                contact_number.setText(number);
+
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+    }
+
 //    private String getPhoneNumber(String contactId) {
 //        Cursor cursor = getContentResolver().query(
 //                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -338,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
 //                null
 //        );
 //        return contactId;
-
+//    }
 
     ////        super.onActivityResult(requestCode, resultCode, data);
 //        if (resultCode != Activity.RESULT_OK || data == null) return;
