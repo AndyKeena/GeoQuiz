@@ -3,7 +3,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import android.content.ContentUris;
 import android.util.Log;
 import android.annotation.SuppressLint;
@@ -22,9 +21,6 @@ import android.widget.Toast;
 import android.provider.ContactsContract;
 import android.Manifest;
 import android.app.Activity;
-
-
-
 
 public class MainActivity extends AppCompatActivity {
     private static final String KEY_INDEX = "index";
@@ -162,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         final Intent pickContact = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
 
         contact_name = findViewById(R.id.contact_name);
@@ -214,79 +209,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onDestroy() called");
     }
 
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (resultCode != Activity.RESULT_OK) return;
-//        if (requestCode == REQUEST_CONTACT && data != null)  {
-//            Uri contactUri = data.getData();            // Get the URI and query the content provider for the display the name
-//            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.Contacts._ID};
-//
-//            Cursor cursor = this.getContentResolver().query(contactUri, queryFields, null, null, null);
-//            try
-//            {
-//                if (cursor.getCount() == 0) return;
-//                cursor.moveToFirst();
-//
-//                String name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-//                contact_name.setText(name);
-//
-//            }
-//            finally
-//            {
-//                cursor.close();
-//            }
-//        }
-//    }
-
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//       super.onActivityResult(requestCode, resultCode, data);
-//        if (resultCode != Activity.RESULT_OK) return;
-////        if (requestCode == REQUEST_CONTACT && data != null) {
-//        if (requestCode == REQUEST_CODE_CHEAT){
-//            if (data == null){
-//                return;
-//            }
-////            Uri contactUri = data.getData(); // Get the URI
-////            String[] queryFields = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
-////
-////            Cursor cursor = getContentResolver().query(
-////                    contactUri,
-////                    queryFields,
-////                    null,
-////                    null,
-////                    null
-////            );
-////
-////            try {
-////                if (cursor == null || cursor.getCount() == 0) return;
-////                cursor.moveToFirst();
-////
-////                // Get the phone number
-////                @SuppressLint("Range") String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-////
-////                // Display the phone number
-////                contact_number.setText(phoneNumber);
-////            } finally {
-////                if (cursor != null) {
-////                    cursor.close();
-////                }
-////            }
-//            mIsCheater = CheatActivity.wasAnswerShown(data);
-//        }
-//    }
-
-
-//
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
         if (requestCode == REQUEST_CONTACT && data != null) {
             Uri contactUri = data.getData(); // Get the URI
-//            String number = "0704136693";
-            String[] queryFields = new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,ContactsContract.CommonDataKinds.Phone.NUMBER };
+            String[] queryFields = new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER};
             String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(contactUri))};
             String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?";
 
@@ -298,88 +227,14 @@ public class MainActivity extends AppCompatActivity {
                 @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                 @SuppressLint("Range") String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
-                // Display the name
                 contact_name.setText(name);
                 contact_number.setText(number);
-
-//                // Use the contact ID to fetch the phone number
-//                String phoneNumber = getPhoneNumber(contactId);
-//                if (phoneNumber != null) {
-//                    // Display the phone number
-//                    contact_number.setText(phoneNumber);
-//                } else {
-//                    // Handle case where phone number is not found
-//                    contact_number.setText("Phone number not found");
-//                }
 
             } finally {
                 cursor.close();
             }
         }
-//        if (resultCode != Activity.RESULT_OK) return;
-//        if (requestCode == REQUEST_CONTACT && data != null) {
-//            Uri contactUri = data.getData(); // Get the URI
-//            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
-//
-//            Cursor cursor = null;
-//            try {
-//                cursor = getContentResolver().query(contactUri, queryFields, null, null, null);
-//                if (cursor == null || cursor.getCount() == 0) return;
-//
-//                cursor.moveToFirst();
-//                String name = cursor.getString(0);
-////                String contactId = number;
-//                // Display the name
-//                contact_name.setText(name);
-//                String number= "0704136693";
-//                contact_number.setText(number);
-//
-//            } finally {
-//                if (cursor != null) {
-//                    cursor.close();
-//                }
-//            }
-//        }
     }
-
-//    private String getPhoneNumber(String contactId) {
-//        Cursor cursor = getContentResolver().query(
-//                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-//                null,
-//                ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-//                new String[]{contactId},
-//                null
-//        );
-//        return contactId;
-//    }
-
-    ////        super.onActivityResult(requestCode, resultCode, data);
-//        if (resultCode != Activity.RESULT_OK || data == null) return;
-//        if (requestCode == REQUEST_CONTACT) {
-//            // Get the URI and query the content provider for the phone number
-//            Uri contactUri = data.getData();
-//            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER};
-//
-//            Cursor cursor = null;
-//            try {
-//                cursor = this.getContentResolver().query(contactUri, queryFields, null, null, null);
-//                if (cursor != null && cursor.moveToFirst()) {
-//                    int nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
-//                    int numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-//                    if (nameIndex != -1 && numberIndex != -1) { // Check if columns exist
-//                        String name = cursor.getString(nameIndex);
-//                        String phoneNumber = cursor.getString(numberIndex);
-//                        String contactInfo = name + " - " + phoneNumber;
-//                        contact_name.setText(contactInfo);
-//                    }
-//                }
-//            } finally {
-//                if (cursor != null) {
-//                    cursor.close();
-//                }
-//            }
-//        }
-//    }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -393,24 +248,19 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-private boolean hasContactPermission(){
-
-    return ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
-
-}
-    private void requestContactsPermission()
-    {
-        if (!hasContactPermission())
-        {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSION_REQUEST_CODE);
+    private boolean hasContactPermission(){
+        return ContextCompat.checkSelfPermission(this,Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
+    }
+        private void requestContactsPermission() {
+            if (!hasContactPermission()) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_PERMISSION_REQUEST_CODE);
+            }
         }
-    }
 
-    public void updateButton(boolean enable)
-    {
-        contact_button.setEnabled(enable);
-        contact_name.setEnabled(enable);
-        contact_number.setEnabled(enable);
-    }
+        public void updateButton(boolean enable) {
+            contact_button.setEnabled(enable);
+            contact_name.setEnabled(enable);
+            contact_number.setEnabled(enable);
+        }
 }
