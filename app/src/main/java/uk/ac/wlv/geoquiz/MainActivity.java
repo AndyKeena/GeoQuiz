@@ -3,6 +3,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import android.content.ContentUris;
 import android.util.Log;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -237,105 +239,107 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//       super.onActivityResult(requestCode, resultCode, data);
+//        if (resultCode != Activity.RESULT_OK) return;
+////        if (requestCode == REQUEST_CONTACT && data != null) {
+//        if (requestCode == REQUEST_CODE_CHEAT){
+//            if (data == null){
+//                return;
+//            }
+////            Uri contactUri = data.getData(); // Get the URI
+////            String[] queryFields = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
+////
+////            Cursor cursor = getContentResolver().query(
+////                    contactUri,
+////                    queryFields,
+////                    null,
+////                    null,
+////                    null
+////            );
+////
+////            try {
+////                if (cursor == null || cursor.getCount() == 0) return;
+////                cursor.moveToFirst();
+////
+////                // Get the phone number
+////                @SuppressLint("Range") String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+////
+////                // Display the phone number
+////                contact_number.setText(phoneNumber);
+////            } finally {
+////                if (cursor != null) {
+////                    cursor.close();
+////                }
+////            }
+//            mIsCheater = CheatActivity.wasAnswerShown(data);
+//        }
+//    }
+
+
+//
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-       super.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_OK) return;
-//        if (requestCode == REQUEST_CONTACT && data != null) {
-        if (requestCode == REQUEST_CODE_CHEAT){
-            if (data == null){
-                return;
+        if (requestCode == REQUEST_CONTACT && data != null) {
+            Uri contactUri = data.getData(); // Get the URI
+//            String number = "0704136693";
+            String[] queryFields = new String[]{ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,ContactsContract.CommonDataKinds.Phone.NUMBER };
+            String[] selectionArgs = new String[]{String.valueOf(ContentUris.parseId(contactUri))};
+            String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?";
+
+            Cursor cursor = this.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, queryFields, selection, selectionArgs, null);
+            try {
+                if (cursor.getCount() == 0) return;
+                cursor.moveToFirst();
+
+                @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                @SuppressLint("Range") String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+
+                // Display the name
+                contact_name.setText(name);
+                contact_number.setText(number);
+
+//                // Use the contact ID to fetch the phone number
+//                String phoneNumber = getPhoneNumber(contactId);
+//                if (phoneNumber != null) {
+//                    // Display the phone number
+//                    contact_number.setText(phoneNumber);
+//                } else {
+//                    // Handle case where phone number is not found
+//                    contact_number.setText("Phone number not found");
+//                }
+
+            } finally {
+                cursor.close();
             }
+        }
+//        if (resultCode != Activity.RESULT_OK) return;
+//        if (requestCode == REQUEST_CONTACT && data != null) {
 //            Uri contactUri = data.getData(); // Get the URI
-//            String[] queryFields = new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER};
+//            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
 //
-//            Cursor cursor = getContentResolver().query(
-//                    contactUri,
-//                    queryFields,
-//                    null,
-//                    null,
-//                    null
-//            );
-//
+//            Cursor cursor = null;
 //            try {
+//                cursor = getContentResolver().query(contactUri, queryFields, null, null, null);
 //                if (cursor == null || cursor.getCount() == 0) return;
+//
 //                cursor.moveToFirst();
+//                String name = cursor.getString(0);
+////                String contactId = number;
+//                // Display the name
+//                contact_name.setText(name);
+//                String number= "0704136693";
+//                contact_number.setText(number);
 //
-//                // Get the phone number
-//                @SuppressLint("Range") String phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-//
-//                // Display the phone number
-//                contact_number.setText(phoneNumber);
 //            } finally {
 //                if (cursor != null) {
 //                    cursor.close();
 //                }
 //            }
-            mIsCheater = CheatActivity.wasAnswerShown(data);
-        }
-   // }
-
-
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//        if (resultCode != Activity.RESULT_OK) return;
-//        if (requestCode == REQUEST_CONTACT && data != null) {
-//            Uri contactUri = data.getData(); // Get the URI
-//            String number = "0704136693";
-//            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME, number};
-//
-//            Cursor cursor = this.getContentResolver().query(contactUri, queryFields, null, null, null);
-//            try {
-//                if (cursor.getCount() == 0) return;
-//                cursor.moveToFirst();
-//
-//                String name = cursor.getString(0);
-//                String contactId = number;
-//
-//                // Display the name
-//                contact_name.setText(name);
-//                contact_name.setText(number);
-//
-////                // Use the contact ID to fetch the phone number
-////                String phoneNumber = getPhoneNumber(contactId);
-////                if (phoneNumber != null) {
-////                    // Display the phone number
-////                    contact_number.setText(phoneNumber);
-////                } else {
-////                    // Handle case where phone number is not found
-////                    contact_number.setText("Phone number not found");
-////                }
-//
-//            } finally {
-//                cursor.close();
-//            }
 //        }
-        if (resultCode != Activity.RESULT_OK) return;
-        if (requestCode == REQUEST_CONTACT && data != null) {
-            Uri contactUri = data.getData(); // Get the URI
-            String[] queryFields = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
-
-            Cursor cursor = null;
-            try {
-                cursor = getContentResolver().query(contactUri, queryFields, null, null, null);
-                if (cursor == null || cursor.getCount() == 0) return;
-
-                cursor.moveToFirst();
-                String name = cursor.getString(0);
-//                String contactId = number;
-                // Display the name
-                contact_name.setText(name);
-                String number= "0704136693";
-                contact_number.setText(number);
-
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
-            }
-        }
     }
 
 //    private String getPhoneNumber(String contactId) {
