@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
         private TextView contact_number;
         private TextView success_button;
         private boolean mIsCheater;
+        public boolean isAnswerShown = false;
+    private static final String KEY_IS_ANSWER_SHOWN = "is_answer_shown"; // Define a key for saving isAnswerShown state
 
     private void updateQuestion(){
             int question = mQuestionBank[mCurrentIndex].getTextResId();
@@ -64,8 +66,11 @@ public class MainActivity extends AppCompatActivity {
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].isAnswerTrue();
         int messageResId = 0;
-        if (mIsCheater) {
-            messageResId = R.string.judgment_toast;
+        if (isAnswerShown) {
+            Toast.makeText(this, "You have cheated", Toast.LENGTH_SHORT).show();
+            if (userPressedTrue == answerIsTrue) {
+                correctAnswers++;
+            }
         }
         else {
             if (userPressedTrue == answerIsTrue) {
@@ -83,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
     private void displaySuccessRate() {
         double successRate = 0;
         if (attemptedQuestions > 0) {
+//            int validAnswers = attemptedQuestions - (mIsCheater ? 1 : 0); // Exclude cheated answers
             successRate = ((double) correctAnswers / attemptedQuestions) * 100;
         }
         String successRateText = "Success Rate is  " + String.format("%.2f", successRate) + "%";
@@ -96,6 +102,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         if (savedInstanceState != null){
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            isAnswerShown = savedInstanceState.getBoolean(KEY_IS_ANSWER_SHOWN, false);
+            attemptedQuestions = savedInstanceState.getInt("attemptedQuestions", 0);
+            correctAnswers = savedInstanceState.getInt("correctAnswers", 0);
         }
         mCheatButton = (Button)findViewById(R.id.cheat_button);
         mCheatButton.setOnClickListener(new View.OnClickListener() {
@@ -173,6 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
         requestContactsPermission();
         updateButton(hasContactPermission());
+        displaySuccessRate();
     }
 
     @Override
@@ -180,6 +190,9 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(saveInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         saveInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        saveInstanceState.putBoolean(KEY_IS_ANSWER_SHOWN, isAnswerShown);
+        saveInstanceState.putInt("attemptedQuestions", attemptedQuestions);
+        saveInstanceState.putInt("correctAnswers", correctAnswers);
     }
 
     @Override
@@ -234,6 +247,13 @@ public class MainActivity extends AppCompatActivity {
                 cursor.close();
             }
         }
+        if (requestCode == REQUEST_CODE_CHEAT && data != null) {
+            isAnswerShown = data.getBooleanExtra(CheatActivity.EXTRA_ANSWER_SHOWN, false); // Retrieve isAnswerShown value
+            if (isAnswerShown) {
+                // Check if the user cheated but selected the correct answer
+                mIsCheater = true;
+            }
+        }
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -263,4 +283,5 @@ public class MainActivity extends AppCompatActivity {
             contact_name.setEnabled(enable);
             contact_number.setEnabled(enable);
         }
+
 }
